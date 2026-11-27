@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reset password – SafeStreet AI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=Source+Sans+3:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --asphalt: #1b2430;
+        --line: #f6c90e;
+        --paper: #f3f4f1;
+        --ink: #1b2430;
+        --muted: #5d6877;
+        --rule: #d9ddd6;
+        --good: #1f8a5b;
+        --err: #c0392b;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Source Sans 3", system-ui, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        line-height: 1.5;
+      }
+      h1,
+      h2,
+      h3,
+      .brand,
+      button,
+      .btn {
+        font-family: "Archivo", system-ui, sans-serif;
+      }
+      :focus-visible {
+        outline: 3px solid var(--line);
+        outline-offset: 2px;
+      }
+      a {
+        color: inherit;
+      }
+      .brand {
+        font-weight: 800;
+        font-size: 1.4rem;
+        text-decoration: none;
+      }
+      .brand span {
+        color: var(--line);
+      }
+      .btn {
+        display: inline-block;
+        padding: 13px 22px;
+        border-radius: 8px;
+        font-weight: 800;
+        text-decoration: none;
+        border: 0;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .btn.y {
+        background: var(--line);
+        color: var(--ink);
+      }
+      .btn.o {
+        border: 2px solid #fff;
+        color: #fff;
+      }
+      .btn.d {
+        background: var(--asphalt);
+        color: #fff;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        padding: 18px 6vw;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 4px solid var(--line);
+        background: var(--asphalt);
+        color: #fff;
+      }
+      header a.back {
+        font-weight: 600;
+        text-decoration: none;
+        color: #c9d1dc;
+      }
+      main {
+        flex: 1;
+        display: grid;
+        place-items: center;
+        padding: 36px 20px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--rule);
+        border-radius: 14px;
+        padding: 32px;
+        width: 100%;
+        max-width: 440px;
+        box-shadow: 0 6px 24px rgba(27, 36, 48, 0.08);
+      }
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 4px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-bottom: 22px;
+      }
+      .roles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: #e2e5e0;
+        border-radius: 10px;
+        padding: 4px;
+        margin-bottom: 22px;
+      }
+      .roles button {
+        border: 0;
+        background: none;
+        padding: 11px 8px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--muted);
+      }
+      .roles button[aria-selected="true"] {
+        background: var(--asphalt);
+        color: #fff;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .field {
+        margin-bottom: 18px;
+      }
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 13px 14px;
+        font: inherit;
+        border: 1.5px solid #b9c0ca;
+        border-radius: 8px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+      }
+      .row a {
+        font-weight: 600;
+      }
+      .submit {
+        width: 100%;
+        background: var(--line);
+        color: var(--ink);
+      }
+      .msg {
+        min-height: 1.4em;
+        margin-top: 14px;
+        font-weight: 600;
+      }
+      .msg.err {
+        color: var(--err);
+      }
+      .msg.ok {
+        color: var(--good);
+      }
+      .alt {
+        margin-top: 20px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .alt a {
+        font-weight: 600;
+      }
+
+      select {
+        width: 100%;
+        padding: 13px 14px;
+        font: inherit;
+        border: 1.5px solid #b9c0ca;
+        border-radius: 8px;
+        background: #fff;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 13px 14px;
+        font: inherit;
+        border: 1.5px solid #b9c0ca;
+        border-radius: 8px;
+      }
+      .help {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .terms {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        font-size: 0.93rem;
+        margin-bottom: 18px;
+      }
+      .terms input {
+        margin-top: 4px;
+      }
+      .priv {
+        background: #f3f4f1;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 18px;
+      }
+      .card {
+        max-width: 480px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="index.html">Safe<span>Street</span> AI</a
+      ><a class="back" href="login.html">&larr; Back to log in</a>
+    </header>
+    <main>
+      <div class="card">
+        <div id="bad" hidden>
+          <h1>This link does not work</h1>
+          <p class="sub">
+            The reset link is missing, used already or expired. Request a new
+            one.
+          </p>
+          <a
+            class="btn submit"
+            style="text-align: center"
+            href="forgot-password.html"
+            >Request a new link</a
+          >
+        </div>
+        <div id="good">
+          <h1>Set a new password</h1>
+          <p class="sub">
+            Choose a password you have not used on this site before.
+          </p>
+          <form id="f" novalidate>
+            <div class="field">
+              <label for="pw">New password</label
+              ><input
+                type="password"
+                id="pw"
+                autocomplete="new-password"
+                placeholder="At least 8 characters"
+              />
+              <div class="help" id="strength">
+                Use 8 or more characters with a letter and a number.
+              </div>
+            </div>
+            <div class="field">
+              <label for="pw2">Confirm new password</label
+              ><input
+                type="password"
+                id="pw2"
+                autocomplete="new-password"
+                placeholder="Type it again"
+              />
+            </div>
+            <button type="submit" class="btn submit">Save new password</button>
+            <div class="msg" id="msg" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </main>
+    <script>
+      var $ = (id) => document.getElementById(id);
+      var token = new URLSearchParams(location.search).get("token");
+      /* TODO: the backend should also check the token is still valid (GET /api/auth/reset-password/:token) */
+      if (!token) {
+        $("good").hidden = true;
+        $("bad").hidden = false;
+      }
+      $("pw").addEventListener("input", () => {
+        var p = $("pw").value,
+          ok = p.length >= 8 && /[A-Za-z]/.test(p) && /\d/.test(p);
+        $("strength").textContent = !p
+          ? "Use 8 or more characters with a letter and a number."
+          : ok
+            ? "Good password."
+            : "Needs 8 or more characters, a letter and a number.";
+        $("strength").style.color = !p ? "" : ok ? "#1f8a5b" : "#c0392b";
+      });
+      $("f").addEventListener("submit", (e) => {
+        e.preventDefault();
+        var m = $("msg"),
+          pw = $("pw").value;
+        m.className = "msg err";
+        if (pw.length < 8 || !/[A-Za-z]/.test(pw) || !/\d/.test(pw)) {
+          m.textContent =
+            "Password needs 8 or more characters, a letter and a number.";
+          return;
+        }
+        if (pw !== $("pw2").value) {
+          m.textContent = "The two passwords do not match.";
+          return;
+        }
+        /* TODO: POST /api/auth/reset-password with { token, password } */
+        m.className = "msg ok";
+        m.textContent = "Password updated. Taking you to log in...";
+        setTimeout(() => {
+          location.href = "login.html";
+        }, 1200);
+      });
+    </script>
+  </body>
+</html>
