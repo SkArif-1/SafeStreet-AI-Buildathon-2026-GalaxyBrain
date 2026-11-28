@@ -265,19 +265,8 @@ SafeStreet AI was developed collaboratively for CityFix Buildathon 2026.
 |---|---|
 | **Sk Arif** | Frontend development |
 | **Mukim Shah** | AI Developer & Backend Developer |
-| **@skabar808** | AI contribution |
-| **@yasir** | Data Analysis & CSV |
+| **Sk Yasin** | AI contribution |
 
-
-### Project Contribution
-
-**Mukim Shah**  
-AI Developer & Backend Developer  
-**Quick Automate**
-
-Website: [quickautomate.in](https://quickautomate.in)
-
----
 
 ## Project Information
 
