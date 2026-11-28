@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- =========================================================
+       BASIC
+  ========================================================== -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- =========================================================
+       PRIMARY SEO
+  ========================================================== -->
+  <title>
+    Quick Automate | AI Automation, AI Agents & Custom Software Development
+  </title>
+
+  <meta name="description"
+    content="Quick Automate helps businesses automate operations with AI Agents, Workflow Automation, Custom Software Development, CRM Integrations, Chatbots, and Business Process Automation." />
+
+  <meta name="keywords"
+    content="AI Automation, AI Agents, Workflow Automation, Custom Software Development, Business Automation, CRM Integration, Chatbots, WhatsApp Automation, AI Solutions, Ahmedabad, India" />
+
+  <meta name="author" content="Quick Automate" />
+  <meta name="application-name" content="Quick Automate" />
+  <meta name="generator" content="Vite + React" />
+
+  <meta name="theme-color" content="#0A0A0F" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- =========================================================
+       SEARCH ENGINE
+  ========================================================== -->
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="googlebot" content="index, follow" />
+
+  <!-- =========================================================
+       CANONICAL
+  ========================================================== -->
+  <link rel="canonical" href="https://quickautomate.in/" />
+
+  <!-- =========================================================
+       FAVICON / BRAND LOGO
+  ========================================================== -->
+  <!-- <link rel="icon" type="image/png" href="/quick-automate-logo.png" />
+  <link rel="shortcut icon" type="image/png" href="/quick-automate-logo.png" />
+  <link rel="apple-touch-icon" href="/quick-automate-logo.png" /> -->
+
+  <!-- <link rel="icon" type="image/svg+xml" href="/src/assets/Final%20Logo%20QA.svg" /> -->
+  <link rel="icon" type="image/svg+xml" href="/quick-automate-favicon.svg" />
+  <!-- =========================================================
+       REFERRER
+  ========================================================== -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- =========================================================
+       OPEN GRAPH
+  ========================================================== -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_IN" />
+  <meta property="og:site_name" content="Quick Automate" />
+
+  <meta property="og:title" content="Quick Automate | AI Automation & Custom Software Development" />
+
+  <meta property="og:description"
+    content="Transform your business with AI Agents, Workflow Automation, Chatbots, CRM Integrations, and Custom Software built by Quick Automate." />
+
+  <meta property="og:url" content="https://quickautomate.in/" />
+
+  <meta property="og:image" content="https://quickautomate.in/og-image.png" />
+
+  <meta property="og:image:secure_url" content="https://quickautomate.in/og-image.png" />
+
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta property="og:image:alt" content="Quick Automate - AI Automation & Custom Software" />
+
+  <!-- =========================================================
+       TWITTER / X
+  ========================================================== -->
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <meta name="twitter:title" content="Quick Automate | AI Automation & Custom Software Development" />
+
+  <meta name="twitter:description"
+    content="AI Agents, Workflow Automation, CRM Integrations, Chatbots and Custom Software for modern businesses." />
+
+  <meta name="twitter:image" content="https://quickautomate.in/og-image.png" />
+
+  <meta name="twitter:image:alt" content="Quick Automate - AI Automation & Custom Software" />
+
+  <!-- =========================================================
+       SECURITY
+
+       CSP intentionally NOT included.
+  ========================================================== -->
+
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- =========================================================
+       JSON-LD: ORGANIZATION
+  ========================================================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://quickautomate.in/#organization",
+    "name": "Quick Automate",
+    "url": "https://quickautomate.in/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://quickautomate.in/quick-automate-logo.png"
+    },
+    "image": "https://quickautomate.in/og-image.png",
+    "email": "info@quickautomate.in",
+    "telephone": "+91-76239-37342",
+    "description": "Quick Automate provides AI Automation, AI Agents, Workflow Automation and Custom Software Development for businesses.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+91-76239-37342",
+      "email": "info@quickautomate.in",
+      "contactType": "customer support",
+      "availableLanguage": [
+        "English",
+        "Hindi"
+      ]
+    },
+    "sameAs": []
+  }
+  </script>
+
+  <!-- =========================================================
+       JSON-LD: PROFESSIONAL SERVICE
+  ========================================================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": "https://quickautomate.in/#business",
+    "name": "Quick Automate",
+    "url": "https://quickautomate.in/",
+    "image": "https://quickautomate.in/og-image.png",
+    "priceRange": "₹₹",
+    "email": "info@quickautomate.in",
+    "telephone": "+91-76239-37342",
+    "areaServed": {
+      "@type": "Country",
+      "name": "India"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ahmedabad",
+      "addressRegion": "Gujarat",
+      "postalCode": "380001",
+      "addressCountry": "IN"
+    },
+    "openingHours": "Mo-Sa 09:00-18:00",
+    "foundingLocation": {
+      "@type": "Place",
+      "name": "Ahmedabad, Gujarat, India"
+    }
+  }
+  </script>
+
+  <!-- =========================================================
+       JSON-LD: WEBSITE
+  ========================================================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://quickautomate.in/#website",
+    "name": "Quick Automate",
+    "url": "https://quickautomate.in/",
+    "publisher": {
+      "@id": "https://quickautomate.in/#organization"
+    },
+    "inLanguage": "en-IN",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://quickautomate.in/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- =========================================================
+       PERFORMANCE
+  ========================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+  <!-- =========================================================
+       GOOGLE FONTS
+  ========================================================== -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- =========================================================
+       BASE PAGE BACKGROUND
+  ========================================================== -->
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #0A0A0F;
+    }
+  </style>
+
+  <!-- =========================================================
+       GOOGLE ANALYTICS - GA4
+  ========================================================== -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XHRQF1VY6Y"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+
+    gtag("config", "G-XHRQF1VY6Y", {
+      page_title: document.title,
+      page_location: window.location.href
+    });
+  </script>
+
+  <script type="module" crossorigin src="/assets/index-C3wzM34F.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/router-BAEqwfwD.js">
+  <link rel="modulepreload" crossorigin href="/assets/motion-DDb31RK1.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-B6kDWm6K.css">
+</head>
+
+<body class="antialiased" style="background:#0A0A0F;">
+
+  <!-- =========================================================
+       ACCESSIBILITY
+  ========================================================== -->
+  <a href="#main-content"
+    class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-[#050816] focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">
+    Skip to main content
+  </a>
+
+  <!-- =========================================================
+       REACT ROOT
+  ========================================================== -->
+  <div id="root"></div>
+
+  <!-- =========================================================
+       VITE / REACT ENTRY
+  ========================================================== -->
+
+</body>
+
+</html>

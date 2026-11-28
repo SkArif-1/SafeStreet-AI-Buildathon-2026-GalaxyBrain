@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Login | SafeStreet AI</title>
+
+  <meta name="description" content="Sign in to SafeStreet AI to report, track, and manage community safety issues." />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="/assets/enhancements.css" />
+
+  <style>
+    :root {
+      --navy: #17202c;
+      --navy-light: #202d3e;
+      --yellow: #f6c90e;
+      --yellow-hover: #e6b900;
+      --white: #ffffff;
+      --muted: #788598;
+      --border: #e4e8ef;
+      --background: #f4f6f9;
+      --success: #16865c;
+      --danger: #d94343;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Source Sans 3", sans-serif;
+      background: var(--background);
+      color: var(--navy);
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      min-height: 76px;
+      padding: 0 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--navy);
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    .brand {
+      font-family: "Archivo", sans-serif;
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -1px;
+    }
+
+    .brand span {
+      color: var(--yellow);
+    }
+
+    .back-link {
+      color: #c3cedd;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--yellow);
+    }
+
+    /* MAIN */
+
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 650px;
+    }
+
+    /* LEFT PANEL */
+
+    .visual-panel {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 80% 15%,
+          rgba(246, 201, 14, 0.13),
+          transparent 30%),
+        radial-gradient(circle at 15% 90%,
+          rgba(62, 132, 230, 0.15),
+          transparent 35%),
+        var(--navy);
+
+      color: white;
+      padding: 70px 10%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .visual-panel::before {
+      content: "";
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      border: 1px solid rgba(246, 201, 14, 0.15);
+      border-radius: 50%;
+      right: -130px;
+      bottom: -130px;
+    }
+
+    .visual-panel::after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border: 1px solid rgba(246, 201, 14, 0.1);
+      border-radius: 50%;
+      right: -70px;
+      bottom: -70px;
+    }
+
+    .visual-content {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--yellow);
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 3px;
+      background: var(--yellow);
+      border-radius: 5px;
+    }
+
+    .visual-content h1 {
+      font-family: "Archivo", sans-serif;
+      font-size: clamp(2.6rem, 5vw, 4.6rem);
+      line-height: 1.04;
+      letter-spacing: -2.5px;
+      margin-bottom: 25px;
+    }
+
+    .visual-content h1 span {
+      color: var(--yellow);
+    }
+
+    .visual-content>p {
+      color: #b9c6d7;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      max-width: 460px;
+    }
+
+    .benefits {
+      margin-top: 38px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .benefit {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #dce4ee;
+      font-size: 0.98rem;
+    }
+
+    .benefit-icon {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: rgba(246, 201, 14, 0.12);
+      color: var(--yellow);
+      font-size: 1.1rem;
+    }
+
+    .trust-note {
+      margin-top: 45px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: #91a0b3;
+      font-size: 0.85rem;
+    }
+
+    /* LOGIN PANEL */
+
+    .form-panel {
+      padding: 55px 8%;
+      display: grid;
+      place-items: center;
+      background: var(--background);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 460px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 38px;
+      box-shadow: 0 20px 60px rgba(23, 32, 44, 0.08);
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-label {
+      display: inline-block;
+      color: #8a96a7;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .login-card h2 {
+      font-family: "Archivo", sans-serif;
+      font-size: 2.15rem;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    /* ROLE SELECTOR */
+
+    .roles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      padding: 5px;
+      border-radius: 13px;
+      background: #eef1f5;
+      margin-bottom: 28px;
+    }
+
+    .roles button {
+      border: 0;
+      background: transparent;
+      border-radius: 9px;
+      padding: 12px 8px;
+      color: #748195;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .roles button[aria-selected="true"] {
+      background: var(--navy);
+      color: white;
+      box-shadow: 0 4px 12px rgba(23, 32, 44, 0.15);
+    }
+
+    /* FORM */
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin-bottom: 9px;
+      color: #344154;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 52px;
+      padding: 13px 15px;
+      border: 1.5px solid #dce2ea;
+      border-radius: 12px;
+      background: #fafbfd;
+      color: var(--navy);
+      transition: all 0.2s ease;
+    }
+
+    .field input::placeholder {
+      color: #a2adbc;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: #e1b800;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(246, 201, 14, 0.14);
+    }
+
+    .password-input {
+      padding-right: 75px !important;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: #647186;
+      font-size: 0.83rem;
+      font-weight: 700;
+      padding: 6px;
+    }
+
+    .toggle-password:hover {
+      color: var(--navy);
+    }
+
+    /* OPTIONS */
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 4px 0 25px;
+      font-size: 0.88rem;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #667387;
+    }
+
+    .remember input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--yellow);
+      cursor: pointer;
+    }
+
+    .options a {
+      color: #344154;
+      font-weight: 700;
+    }
+
+    .options a:hover {
+      color: #b28e00;
+    }
+
+    /* SUBMIT */
+
+    .submit {
+      width: 100%;
+      min-height: 54px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--yellow);
+      color: var(--navy);
+      font-family: "Archivo", sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 6px 18px rgba(246, 201, 14, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .submit:hover {
+      background: var(--yellow-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(246, 201, 14, 0.28);
+    }
+
+    .submit:active {
+      transform: translateY(0);
+    }
+
+    .submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .msg {
+      min-height: 24px;
+      margin-top: 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .msg.err {
+      color: var(--danger);
+    }
+
+    .msg.ok {
+      color: var(--success);
+    }
+
+    .alt {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 1px solid #edf0f4;
+      color: #778396;
+      font-size: 0.93rem;
+    }
+
+    .alt a {
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .alt a:hover {
+      color: #b28e00;
+    }
+
+    /* FOOTER */
+
+    .footer {
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      color: #8994a4;
+      font-size: 0.82rem;
+    }
+
+    .footer strong {
+      color: var(--navy);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1000px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .visual-panel {
+        padding: 55px 8%;
+      }
+
+      .visual-content h1 {
+        font-size: 3.5rem;
+      }
+
+      .benefits {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .trust-note {
+        margin-top: 30px;
+      }
+
+      .form-panel {
+        padding: 45px 6%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .topbar {
+        min-height: 68px;
+        padding: 0 5%;
+      }
+
+      .brand {
+        font-size: 1.25rem;
+      }
+
+      .back-link {
+        font-size: 0.82rem;
+      }
+
+      .visual-panel {
+        padding: 45px 6%;
+      }
+
+      .visual-content h1 {
+        font-size: 2.7rem;
+        letter-spacing: -1.5px;
+      }
+
+      .visual-content>p {
+        font-size: 1rem;
+      }
+
+      .benefits {
+        grid-template-columns: 1fr;
+        gap: 13px;
+      }
+
+      .form-panel {
+        padding: 28px 5%;
+      }
+
+      .login-card {
+        padding: 27px 22px;
+        border-radius: 19px;
+      }
+
+      .login-card h2 {
+        font-size: 1.85rem;
+      }
+
+      .options {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .footer {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 5%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      Safe<span>Street</span> AI
+    </a>
+
+    <a class="back-link" href="index.html">
+      ← Back to home
+    </a>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- LEFT BRAND PANEL -->
+    <section class="visual-panel">
+      <div class="visual-content">
+
+        <div class="eyebrow">Community safety platform</div>
+
+        <h1>
+          Safer streets.<br />
+          <span>Stronger</span><br />
+          communities.
+        </h1>
+
+        <p>
+          Your voice matters. Report local safety concerns,
+          track your submissions, and help build a better
+          environment for everyone.
+        </p>
+
+        <div class="benefits">
+          <div class="benefit">
+            <div class="benefit-icon">✓</div>
+            <span>Report issues in your neighbourhood</span>
+          </div>
+
+          <div class="benefit">
+            <div class="benefit-icon">⌖</div>
+            <span>Share location-based safety reports</span>
+          </div>
+
+          <div class="benefit">
+            <div class="benefit-icon">↗</div>
+            <span>Track progress and updates</span>
+          </div>
+        </div>
+
+        <div class="trust-note">
+          Built for citizens. Designed for safer communities.
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LOGIN PANEL -->
+    <section class="form-panel">
+
+      <div class="login-card">
+
+        <span class="card-label">Welcome back</span>
+
+        <h2>Sign in</h2>
+
+        <p class="card-subtitle" id="sub">
+          Check the status of the issues you reported.
+        </p>
+
+        <!-- ROLE SELECTOR -->
+        <div class="roles" role="tablist" aria-label="Choose login role">
+
+          <button type="button" role="tab" aria-selected="true" data-role="citizen">
+            Citizen
+          </button>
+
+          <button type="button" role="tab" aria-selected="false" data-role="admin">
+            Admin
+          </button>
+
+        </div>
+
+        <!-- FORM -->
+        <form id="f" novalidate>
+
+          <div class="field">
+            <label for="email" id="el">Email address</label>
+
+            <input type="email" id="email" autocomplete="username" placeholder="you@example.com" required />
+          </div>
+
+          <div class="field">
+            <label for="pw">Password</label>
+
+            <div class="input-wrap">
+              <input type="password" id="pw" class="password-input" autocomplete="current-password"
+                placeholder="Enter your password" required />
+
+              <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+                Show
+              </button>
+            </div>
+          </div>
+
+          <div class="options">
+
+            <label class="remember">
+              <input type="checkbox" id="rm" />
+              <span>Keep me logged in</span>
+            </label>
+
+            <a href="forgot-password.html">
+              Forgot password?
+            </a>
+
+          </div>
+
+          <button type="submit" class="submit" id="go">
+            Log in as citizen
+          </button>
+
+          <div class="msg" id="msg" role="status" aria-live="polite"></div>
+
+        </form>
+
+        <p class="alt" id="alt">
+          New here?
+          <a href="register.html">Create a citizen account</a>
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>
+      © 2026 <strong>SafeStreet AI</strong>
+    </span>
+
+    <span>
+      A safer community starts with you.
+    </span>
+  </footer>
+
+  <!-- EXISTING LOGIN LOGIC -->
+  <script>
+    let role = "citizen";
+
+    const $ = (id) => document.getElementById(id);
+
+    const T = {
+      citizen: {
+        sub: "Check the status of the issues you reported.",
+        el: "Email address",
+        ph: "you@example.com",
+        btn: "Log in as citizen",
+        alt: 'New here? <a href="register.html">Create a citizen account</a>',
+      },
+
+      admin: {
+        sub: "Review reports, update status and see city analytics.",
+        el: "Official email",
+        ph: "name@city.gov.in",
+        btn: "Log in as admin",
+        alt: "Admin accounts are created by your department head.",
+      },
+    };
+
+    function setRole(r) {
+      role = r;
+
+      document.querySelectorAll(".roles button").forEach((button) => {
+        button.setAttribute(
+          "aria-selected",
+          button.dataset.role === r
+        );
+      });
+
+      const t = T[r];
+
+      $("sub").textContent = t.sub;
+      $("el").textContent = t.el;
+      $("email").placeholder = t.ph;
+      $("go").textContent = t.btn;
+      $("alt").innerHTML = t.alt;
+
+      $("msg").textContent = "";
+      $("msg").className = "msg";
+    }
+
+    document.querySelectorAll(".roles button").forEach((button) => {
+      button.addEventListener("click", () => {
+        setRole(button.dataset.role);
+      });
+    });
+
+    // Password visibility toggle
+    $("togglePassword").addEventListener("click", () => {
+      const password = $("pw");
+      const button = $("togglePassword");
+
+      const isHidden = password.type === "password";
+
+      password.type = isHidden ? "text" : "password";
+      button.textContent = isHidden ? "Hide" : "Show";
+
+      button.setAttribute(
+        "aria-label",
+        isHidden ? "Hide password" : "Show password"
+      );
+    });
+
+    // Support admin role from URL
+    if (
+      new URLSearchParams(location.search).get("role") === "admin"
+    ) {
+      setRole("admin");
+    }
+
+
+    // Backend-connected login
+    $("f").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const message = $("msg");
+      const email = $("email").value.trim();
+      const password = $("pw").value;
+      const button = $("go");
+
+      message.className = "msg";
+      message.textContent = "";
+
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        message.className = "msg err";
+        message.textContent = "Please enter a valid email address.";
+        $("email").focus();
+        return;
+      }
+
+      if (password.length < 6) {
+        message.className = "msg err";
+        message.textContent = "Password must be at least 6 characters.";
+        $("pw").focus();
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Signing in...";
+
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/auth/login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              email,
+              password,
+              role
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.token) {
+          throw new Error(
+            data.message || "Login failed. Check your credentials."
+          );
+        }
+
+        // Save token according to Remember Me
+        const storage = $("rm").checked
+          ? localStorage
+          : sessionStorage;
+
+        storage.setItem("token", data.token);
+        storage.setItem("user", JSON.stringify(data.user));
+
+        message.className = "msg ok";
+        message.textContent = "Login successful! Redirecting...";
+
+        setTimeout(() => {
+          location.href =
+            role === "admin"
+              ? "admin-dashboard.html"
+              : "citizen-dashboard.html";
+        }, 700);
+
+      } catch (error) {
+        message.className = "msg err";
+        message.textContent =
+          error.message || "Could not connect to backend.";
+      } finally {
+        button.disabled = false;
+        button.textContent = T[role].btn;
+      }
+    });
+
+  </script>
+
+  <script src="/assets/app.js"></script>
+
+</body>
+
+</html>

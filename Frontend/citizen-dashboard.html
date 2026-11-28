@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SafeStreet AI – Citizen map</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=Source+Sans+3:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #172235;
+      --navy-2: #22334a;
+      --yellow: #f6c90e;
+      --yellow-soft: #fff8d8;
+      --ink: #182338;
+      --muted: #68778d;
+      --line: #e2e8f0;
+      --surface: #ffffff;
+      --canvas: #f3f6fb;
+      --green: #1f8a5b;
+      --blue: #2f6fdb;
+      --radius: 18px;
+      --shadow: 0 12px 32px rgba(23, 34, 53, .07);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Archivo", "Source Sans 3", "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    /* Premium compact header */
+    .top {
+      min-height: 82px;
+      padding: 17px clamp(20px, 4vw, 58px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      background: linear-gradient(115deg, #121c2b, #203149);
+      color: #fff;
+      border-bottom: 4px solid var(--yellow);
+    }
+    .brand {
+      font-size: clamp(21px, 2vw, 27px);
+      font-weight: 800;
+      letter-spacing: -.7px;
+      white-space: nowrap;
+    }
+    .brand span { color: var(--yellow); }
+    .who {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #d5deeb;
+      font-size: 14px;
+    }
+    .who a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 17px;
+      border: 1px solid #536176;
+      border-radius: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+    .who a:hover { color: var(--navy); background: var(--yellow); border-color: var(--yellow); }
+
+    .notice {
+      margin: 0;
+      padding: 12px clamp(20px, 4vw, 58px);
+      background: var(--yellow-soft);
+      border-bottom: 1px solid #f0df91;
+      color: #695200;
+      font-size: 13px;
+    }
+
+    /* Main two-column workspace */
+    .app {
+      width: min(1600px, 100%);
+      margin: 0 auto;
+      padding: 24px clamp(16px, 3vw, 42px) 36px;
+      display: grid;
+      grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
+      align-items: start;
+      gap: 22px;
+    }
+    .side { min-width: 0; }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 7px;
+      margin-bottom: 16px;
+      background: #e8edf5;
+      border: 1px solid #dce4ef;
+      border-radius: 14px;
+    }
+    .tabs button {
+      flex: 1 1 auto;
+      min-height: 43px;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      color: #526178;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+    .tabs button:hover { background: #fff; color: var(--ink); }
+    .tabs button[aria-selected="true"] {
+      background: var(--navy);
+      color: var(--yellow);
+      box-shadow: 0 4px 10px rgba(23, 34, 53, .14);
+    }
+    .panel {
+      min-width: 0;
+      margin: 0 0 16px;
+      padding: 23px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .panel h2 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 23px;
+      line-height: 1.25;
+      letter-spacing: -.5px;
+    }
+    .panel h3 { margin: 0 0 10px; font-size: 16px; }
+    .hint { margin: 0 0 20px; color: var(--muted); line-height: 1.65; }
+    .muted { color: var(--muted); }
+
+    .sel2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 18px 0 14px;
+    }
+    .place-field { position: relative; min-width: 0; }
+    .place-suggestions {
+      position: absolute; z-index: 1500; top: calc(100% + 5px); left: 0; right: 0;
+      display: none; max-height: 260px; overflow-y: auto;
+      background: #fff; border: 1px solid #d7dfeb; border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(23,34,53,.18); padding: 5px;
+    }
+    .place-suggestions.open { display: block; }
+    .place-suggestion {
+      display: block; width: 100%; text-align: left; border: 0; border-radius: 8px;
+      padding: 10px 12px; background: transparent; color: var(--ink); cursor: pointer;
+      font-size: 13px; line-height: 1.4;
+    }
+    .place-suggestion:hover, .place-suggestion:focus {
+      background: #fff8d8; outline: none;
+    }
+    .place-suggestion small { display: block; margin-top: 3px; color: var(--muted); }
+    .place-suggest-status { padding: 10px 12px; color: var(--muted); font-size: 12px; }
+
+    label {
+      display: block;
+      margin: 0 0 7px;
+      color: #3b4a60;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    select, input:not([type="file"]), textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #d7e0ed;
+      border-radius: 10px;
+      background: #f9fbfe;
+      color: var(--ink);
+      outline: none;
+      transition: border .2s, box-shadow .2s;
+    }
+    select:focus, input:focus, textarea:focus {
+      border-color: #d6ad00;
+      box-shadow: 0 0 0 3px rgba(246, 201, 14, .2);
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    #reportForm label:not(:first-child) { margin-top: 15px; }
+    #img { display: block; width: 100%; max-width: 100%; padding: 10px; border: 1px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; }
+
+    .btnrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 45px;
+      padding: 11px 19px;
+      border: 1px solid #e2b600;
+      border-radius: 11px;
+      background: var(--yellow);
+      color: #172235;
+      font-weight: 800;
+      box-shadow: 0 5px 13px rgba(246, 201, 14, .2);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(246, 201, 14, .28); }
+    .btn:active { transform: translateY(0); }
+    button:focus-visible, a:focus-visible { outline: 3px solid #91b8ff; outline-offset: 3px; }
+
+    #findMsg, .msg, .lim { margin-top: 12px; font-size: 13px; }
+    .msg.err { color: #b42318; }
+    .msg.ok { color: var(--green); }
+    .lim { padding: 11px 13px; border-radius: 10px; background: #fff8d8; color: #765d00; }
+
+    #routeList { display: grid; gap: 10px; margin: 16px 0; }
+    .route {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--c, #2f6fdb);
+      border-radius: 13px;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 4px 12px rgba(23, 34, 53, .035);
+      transition: .2s ease;
+    }
+    .route:hover { transform: translateY(-1px); border-color: #c7d2e2; }
+    .route[aria-pressed="true"] {
+      border-color: #7f91ad;
+      background: #f5f8fc;
+      box-shadow: 0 0 0 2px rgba(47, 111, 219, .1);
+    }
+    .r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+    .r1 strong { font-size: 15px; }
+    .route small { display: block; color: var(--muted); line-height: 1.6; }
+    .score { display: inline-block; flex-shrink: 0; padding: 4px 8px; border-radius: 7px; background: #edf3ff; color: #254f9b; font-size: 12px; font-weight: 800; }
+    .score.g { background: #e8f6ef; color: #176b45; }
+    .score.m { background: #fff4d6; color: #805c00; }
+    .score.b { background: #fdecec; color: #a52a2a; }
+
+    .box {
+      margin-top: 14px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfcfe;
+    }
+    .box p { color: var(--muted); }
+    .box ul { padding-left: 20px; }
+    .box li { margin: 6px 0; }
+    .ind {
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) minmax(70px, 1.4fr) 35px;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #e9eef5;
+    }
+    .ind:last-child { border-bottom: 0; }
+    .ind small { color: var(--muted); }
+    .bar { height: 8px; overflow: hidden; border-radius: 99px; background: #e8edf5; }
+    .bar i { display: block; height: 100%; border-radius: inherit; }
+    .disc { margin-top: 15px; padding: 12px 14px; border-radius: 10px; background: #fff8d8; color: #725900; font-size: 12px; }
+
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
+    .chip {
+      padding: 8px 13px;
+      border: 1px solid #d9e2ee;
+      border-radius: 99px;
+      background: #f8fafc;
+      color: #536176;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .chip[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: var(--yellow); }
+    .issue { margin: 12px 0; padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .issue .t, .meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .issue p { margin: 10px 0; color: #4e5d73; }
+    .badge { padding: 5px 9px; border-radius: 99px; font-size: 11px; font-weight: 800; }
+    .st-pending { background: #fff1d3; color: #8a5700; }
+    .st-verified { background: #e8f0ff; color: #2457a6; }
+    .st-resolved { background: #e5f6ed; color: #176b45; }
+    .st-rejected { background: #edf0f4; color: #657184; }
+    .track { display: flex; gap: 5px; margin: 13px 0; }
+    .track i { flex: 1; height: 5px; border-radius: 99px; background: #e5eaf1; }
+    .track i.on { background: var(--green); }
+    .meta { color: var(--muted); font-size: 12px; }
+    .mini { padding: 6px 10px; border: 1px solid #dbe3ef; border-radius: 8px; background: #f8fafc; color: #34445b; font-size: 12px; font-weight: 700; }
+    .mini:hover { border-color: #aab9cd; background: #edf2f8; }
+    .loc { padding: 12px; border: 1px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; color: var(--muted); font-size: 13px; }
+    .loc.set { border-color: #7bb99a; background: #eef9f2; color: #176b45; }
+
+    /* Map area */
+    .mapwrap {
+      position: sticky;
+      top: 18px;
+      min-width: 0;
+      min-height: 680px;
+      overflow: hidden;
+      border: 1px solid #dce4ef;
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    #map { width: 100%; height: min(72vh, 760px); min-height: 520px; background: #e9eff5; }
+    .mapfilter { display: flex; align-items: center; gap: 12px; padding: 13px 17px; border-top: 1px solid var(--line); background: #fff; }
+    .mapfilter label { margin: 0; white-space: nowrap; }
+    .mapfilter select { width: auto; min-width: 170px; min-height: 38px; padding: 7px 10px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px 17px; padding: 12px 17px 16px; border-top: 1px solid #edf1f6; color: #5d6b80; font-size: 12px; }
+    .legend span { display: inline-block; width: 9px; height: 9px; margin-right: 5px; border-radius: 50%; vertical-align: middle; }
+    .leaflet-container { font-family: inherit; }
+    .leaflet-popup-content-wrapper { border-radius: 12px; }
+    .leaflet-control-zoom a { color: var(--navy) !important; }
+
+    table.tbl { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+    .tbl th { padding: 11px 13px; background: var(--navy); color: #fff; text-align: left; font-size: 12px; }
+    .tbl td { padding: 11px 13px; border-bottom: 1px solid var(--line); font-size: 13px; white-space: nowrap; }
+    .tbl tr:nth-child(even) td { background: #f7f9fc; }
+    .tbl td.best { background: #e8f6ef; color: #176b45; font-weight: 800; }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 1050px) {
+      .app { grid-template-columns: minmax(320px, 410px) minmax(0, 1fr); gap: 15px; padding: 18px; }
+      .panel { padding: 18px; }
+      #map { min-height: 460px; }
+      .mapwrap { min-height: 600px; }
+    }
+    @media (max-width: 820px) {
+      .app { grid-template-columns: 1fr; }
+      .mapwrap { position: relative; top: auto; min-height: auto; }
+      #map { height: 55vh; min-height: 360px; }
+      .side { display: contents; }
+      .tabs { grid-row: 1; }
+      .panel { grid-row: 2; }
+      .mapwrap { grid-row: 3; }
+    }
+    @media (max-width: 520px) {
+      .top { align-items: flex-start; flex-direction: column; padding: 16px 20px; gap: 12px; }
+      .who { width: 100%; justify-content: space-between; }
+      .notice { padding: 11px 20px; }
+      .app { padding: 14px; gap: 14px; }
+      .panel { padding: 17px; border-radius: 14px; }
+      .panel h2 { font-size: 21px; }
+      .sel2 { grid-template-columns: 1fr; gap: 10px; }
+      .r1 { align-items: flex-start; flex-direction: column; gap: 6px; }
+      .ind { grid-template-columns: 1fr 1fr 30px; gap: 8px; }
+      .mapfilter { align-items: flex-start; flex-direction: column; gap: 7px; }
+      .mapfilter select { width: 100%; }
+      #map { min-height: 320px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="brand">Safe<span>Street</span> AI</div>
+    <div class="who">
+      <span>Signed in as Citizen</span><a href="index.html">Log out</a>
+    </div>
+  </header>
+  <div class="notice">
+    <b>Live reports.</b> Citizen reports are loaded from the SafeStreet AI backend. Routes are calculated from the road network; safety evidence is shown only when citizen observations are available.
+  </div>
+    <main class="app">
+    <section class="side">
+      <nav class="tabs" role="tablist" aria-label="Citizen dashboard">
+        <button id="t-routes" data-p="routes" role="tab" aria-selected="true">Routes</button>
+        <button id="t-report" data-p="report" role="tab" aria-selected="false">Report issue</button>
+        <button id="t-community" data-p="community" role="tab" aria-selected="false">Community</button>
+      </nav>
+
+      <section class="panel" id="p-routes">
+        <h2>Compare routes</h2>
+        <p class="hint">Type any city, area, landmark or full address. We locate both points and calculate road routes with estimated distance/time; citizen safety evidence appears only when available.</p>
+
+        <div class="sel2">
+          <div class="place-field">
+            <label for="from">From (city / area / landmark)</label>
+            <input id="from" class="place-input" type="text" placeholder="Start typing a city or place…" autocomplete="off" value="Patia, Bhubaneswar, Odisha, India" />
+            <div id="fromSuggestions" class="place-suggestions" role="listbox" aria-label="Starting location suggestions"></div>
+          </div>
+          <div class="place-field">
+            <label for="to">To (city / area / landmark)</label>
+            <input id="to" class="place-input" type="text" placeholder="Start typing a destination…" autocomplete="off" value="Jaydev Vihar, Bhubaneswar, Odisha, India" />
+            <div id="toSuggestions" class="place-suggestions" role="listbox" aria-label="Destination suggestions"></div>
+          </div>
+
+        </div>
+
+        <div class="btnrow">
+          <button class="btn" id="findBtn" type="button">Find routes</button>
+        </div>
+        <div id="findMsg"></div>
+
+        <div id="routeBox" hidden>
+          <div id="routeList"></div>
+          <div class="btnrow">
+            <button class="btn" id="cmpBtn" type="button">Compare routes</button>
+          </div>
+          <div id="compare" class="box" hidden></div>
+          <div id="details"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="p-report" hidden>
+        <h2>Report an issue</h2>
+        <p class="hint">Help improve the route evidence. Select a location on the map, then describe what you noticed.</p>
+
+        <form id="reportForm">
+          <label for="type">Issue category</label>
+          <select id="type" required></select>
+
+          <label for="desc">What did you observe?</label>
+          <textarea id="desc" placeholder="Describe the issue clearly (at least 10 characters)..." required minlength="10"></textarea>
+
+          <label for="img">Add a photo (optional)</label>
+          <input id="img" type="file" accept="image/*" />
+
+          <p class="lim">Please avoid including faces, personal details or sensitive information in photos.</p>
+
+          <div id="loc" class="loc">Click a spot on the map to set the location.</div>
+
+          <div class="btnrow" style="margin-top:16px">
+            <button class="btn" type="submit">Submit report</button>
+          </div>
+          <div id="rmsg" class="msg" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <section class="panel" id="p-community" hidden>
+        <h2>Community reports</h2>
+        <p class="hint">See reports shared by the community and track your own submissions.</p>
+
+        <div class="filters" aria-label="Filter reports">
+          <button class="chip" data-f="all" aria-pressed="true" type="button">All reports</button>
+          <button class="chip" data-f="mine" aria-pressed="false" type="button">My reports</button>
+        </div>
+
+        <div id="issueList"></div>
+      </section>
+    </section>
+
+    <section class="mapwrap" aria-label="Interactive report and route map">
+      <div id="map"></div>
+
+      <div class="mapfilter">
+        <label for="mapCat">Map reports</label>
+        <select id="mapCat">
+          <option value="">All categories</option>
+        </select>
+      </div>
+
+      <div class="legend">
+        <div><span style="background:#d98a00"></span>Pending</div>
+        <div><span style="background:#2f6fdb"></span>Verified</div>
+        <div><span style="background:#1f8a5b"></span>Resolved</div>
+        <div><span style="background:#8b95a3"></span>Rejected</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+    <script>
+    /* ===== SAMPLE DATA ===== */
+    var CATS = [
+      "Poor lighting",
+      "Damaged footpath",
+      "Blocked walkway",
+      "Unsafe crossing",
+      "Accessibility barrier",
+      "Other",
+    ];
+
+    var PLACES = [
+      "Master Canteen",
+      "Jaydev Vihar",
+      "Patia",
+      "Old Town"
+    ];
+
+    // Approximate map pins for the demo's Bhubaneswar locations (lat, lng).
+    // OSRM uses these coordinates to calculate road-network routes.
+    var PLACE_COORDS = {
+      "Master Canteen": [20.2647, 85.8393],
+      "Jaydev Vihar": [20.2964, 85.8248],
+      "Patia": [20.3154, 85.8224],
+      "Old Town": [20.2380, 85.8330]
+    };
+
+    var MIN = 3;
+
+    var INDICATORS = [
+      { key: "lighting", label: "Street lighting" },
+      { key: "footpath", label: "Footpath condition" },
+      { key: "crossings", label: "Crossing infrastructure" },
+      { key: "access", label: "Pedestrian accessibility" },
+    ];
+
+    var ROUTES = []; // Populated with real road-network alternatives after route search.
+
+    var ISSUES = []; // Reports are loaded from the backend; no fake tickets.
+
+    var STATUS = {
+      pending: { label: "Pending", color: "#d98a00", step: 1 },
+      verified: { label: "Verified", color: "#2f6fdb", step: 2 },
+      resolved: { label: "Resolved", color: "#1f8a5b", step: 3 },
+      rejected: { label: "Rejected", color: "#8b95a3", step: 0 },
+    };
+
+    /* ===== HELPERS ===== */
+    var $ = (id) => document.getElementById(id);
+
+    var esc = (s) => {
+      var d = document.createElement("div");
+      d.textContent = s;
+      return d.innerHTML;
+    };
+
+    var valid = (r) =>
+      INDICATORS.filter((i) => r.scores[i.key][1] >= MIN);
+
+    var score = (r) => {
+      var v = valid(r);
+      return v.length < 2
+        ? null
+        : v.reduce((t, i) => t + r.scores[i.key][0], 0) / v.length;
+    };
+
+    var obs = (r) =>
+      INDICATORS.reduce((t, i) => t + r.scores[i.key][1], 0);
+
+    var cls = (v) =>
+      v >= 4 ? "g" : v >= 3.2 ? "m" : "b";
+
+    var openCount = (id) =>
+      ISSUES.filter(
+        (i) =>
+          i.route === id &&
+          (i.status === "pending" || i.status === "verified"),
+      ).length;
+
+    var fill = (id, items) => {
+      $(id).innerHTML = items
+        .map((x) => `<option value="${esc(x)}">${esc(x)}</option>`)
+        .join("");
+    };
+
+    var routeById = (id) =>
+      ROUTES.filter((r) => r.id === id)[0];
+
+    // Route endpoints are free-text places, resolved through geocoding.
+    fill("type", CATS);
+
+    $("mapCat").innerHTML =
+      '<option value="">All categories</option>' +
+      CATS.map((c) => `<option>${esc(c)}</option>`).join("");
+
+    /* ===== MAP ===== */
+    var map = L.map("map").setView([20.281, 85.835], 13);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    var lines = {},
+      markers = {},
+      selected = null,
+      picked = null,
+      pickMarker = null;
+
+    // Endpoint pins are refreshed for each searched journey.
+    var ends = L.layerGroup();
+
+    function applyFilter(i) {
+      var c = $("mapCat").value,
+        m = markers[i.id];
+
+      if (!c || i.type === c) m.addTo(map);
+      else map.removeLayer(m);
+    }
+
+    function drawMarker(i) {
+      if (markers[i.id]) map.removeLayer(markers[i.id]);
+
+      var m = L.circleMarker([i.lat, i.lng], {
+        radius: 9,
+        color: "#fff",
+        weight: 2,
+        fillColor: STATUS[i.status].color,
+        fillOpacity: 1,
+      });
+
+      m.bindPopup(
+        `<b>${i.ticketNo ? "#" + esc(i.ticketNo) + " · " : ""}${esc(i.type)}</b><br>${esc(i.text)}<br><i>${STATUS[i.status].label}</i> &middot; ${esc(i.when)}`,
+      );
+
+      markers[i.id] = m;
+      applyFilter(i);
+    }
+
+    ISSUES.forEach(drawMarker);
+
+    $("mapCat").addEventListener("change", () =>
+      ISSUES.forEach(applyFilter),
+    );
+
+    /* ===== ROUTES ===== */
+    function hideRoutes() {
+      $("routeBox").hidden = true;
+      selected = null;
+
+      ROUTES.forEach((r) => map.removeLayer(lines[r.id]));
+      map.removeLayer(ends);
+    }
+
+    // Live location suggestions from OpenStreetMap (global place search).
+    // Custom popup avoids the annoying browser-native datalist dropdown.
+    var suggestionTimers = {};
+    var suggestionControllers = {};
+    var suggestionCache = new Map();
+
+    function closePlaceSuggestions(inputId) {
+      var box = $(inputId + "Suggestions");
+      if (box) { box.classList.remove("open"); box.innerHTML = ""; }
+    }
+
+    function setupPlaceSuggestions(inputId) {
+      var input = $(inputId);
+      var box = $(inputId + "Suggestions");
+      if (!input || !box) return;
+
+      input.addEventListener("input", function () {
+        clearTimeout(suggestionTimers[inputId]);
+        if (suggestionControllers[inputId]) suggestionControllers[inputId].abort();
+
+        var query = input.value.trim();
+        if (query.length < 3) {
+          closePlaceSuggestions(inputId);
+          return;
+        }
+
+        box.innerHTML = '<div class="place-suggest-status">Searching places…</div>';
+        box.classList.add("open");
+
+        suggestionTimers[inputId] = setTimeout(async function () {
+          var cacheKey = query.toLowerCase();
+          try {
+            var results = suggestionCache.get(cacheKey);
+            if (!results) {
+              var controller = new AbortController();
+              suggestionControllers[inputId] = controller;
+              var url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(query);
+              var response = await fetch(url, {
+                headers: { "Accept": "application/json" },
+                signal: controller.signal
+              });
+              if (!response.ok) throw new Error("Place search unavailable");
+              results = await response.json();
+              suggestionCache.set(cacheKey, results);
+            }
+
+            // Ignore stale responses if the user has continued typing.
+            if (input.value.trim().toLowerCase() !== cacheKey) return;
+            box.innerHTML = "";
+
+            if (!results.length) {
+              box.innerHTML = '<div class="place-suggest-status">No places found. Try adding city or country.</div>';
+              box.classList.add("open");
+              return;
+            }
+
+            results.forEach(function (place) {
+              var button = document.createElement("button");
+              button.type = "button";
+              button.className = "place-suggestion";
+              button.setAttribute("role", "option");
+              button.textContent = place.name || place.display_name.split(",")[0];
+
+              var detail = document.createElement("small");
+              detail.textContent = place.display_name;
+              button.appendChild(detail);
+
+              button.addEventListener("click", function () {
+                input.value = place.display_name;
+                input.dataset.lat = place.lat;
+                input.dataset.lng = place.lon;
+                closePlaceSuggestions(inputId);
+                input.dispatchEvent(new Event("change", { bubbles: true }));
+              });
+              box.appendChild(button);
+            });
+            box.classList.add("open");
+          } catch (error) {
+            if (error.name === "AbortError") return;
+            box.innerHTML = '<div class="place-suggest-status">Suggestions unavailable. You can still type the full place name.</div>';
+            box.classList.add("open");
+          }
+        }, 350);
+      });
+
+      input.addEventListener("focus", function () {
+        if (input.value.trim().length >= 3) input.dispatchEvent(new Event("input"));
+      });
+      input.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") closePlaceSuggestions(inputId);
+      });
+    }
+
+    setupPlaceSuggestions("from");
+    setupPlaceSuggestions("to");
+
+    document.addEventListener("click", function (event) {
+      if (!event.target.closest(".place-field")) {
+        closePlaceSuggestions("from");
+        closePlaceSuggestions("to");
+      }
+    });
+
+    // Geocode typed place/address to coordinates. Works across cities and countries.
+    var geocodeCache = new Map();
+    async function geocodePlace(query) {
+      var key = query.trim().toLowerCase();
+      if (geocodeCache.has(key)) return geocodeCache.get(key);
+      var url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=" + encodeURIComponent(query.trim());
+      var response = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!response.ok) throw new Error("Location search service is unavailable (HTTP " + response.status + ").");
+      var results = await response.json();
+      if (!Array.isArray(results) || !results.length) throw new Error("Location not found. Add the city and state/country to the place name.");
+      var place = { lat: Number(results[0].lat), lng: Number(results[0].lon), label: results[0].display_name };
+      if (!Number.isFinite(place.lat) || !Number.isFinite(place.lng)) throw new Error("Could not read coordinates for this location.");
+      geocodeCache.set(key, place);
+      return place;
+    }
+
+    $("findBtn").addEventListener("click", async () => {
+      var fromName = $("from").value.trim();
+      var toName = $("to").value.trim();
+      var msg = $("findMsg");
+
+      if (!fromName || !toName) {
+        hideRoutes(); msg.className = "msg err"; msg.textContent = "Enter both the starting point and destination."; return;
+      }
+      if (fromName.toLowerCase() === toName.toLowerCase()) {
+        hideRoutes(); msg.className = "msg err"; msg.textContent = "Choose two different places."; return;
+      }
+
+      hideRoutes();
+      msg.className = "lim";
+      msg.textContent = "Finding both locations and calculating road routes…";
+      $("findBtn").disabled = true; $("findBtn").textContent = "Finding routes…";
+
+      try {
+        var points = await Promise.all([geocodePlace(fromName), geocodePlace(toName)]);
+        var from = [points[0].lat, points[0].lng];
+        var to = [points[1].lat, points[1].lng];
+
+        // OSRM road routing. It supports worldwide OSM-covered road networks.
+        var routeUrl = "https://router.project-osrm.org/route/v1/driving/" +
+          from[1] + "," + from[0] + ";" + to[1] + "," + to[0] +
+          "?alternatives=3&overview=full&geometries=geojson&steps=false";
+        var response = await fetch(routeUrl);
+        var result = await response.json();
+        if (!response.ok || result.code !== "Ok" || !Array.isArray(result.routes) || !result.routes.length) {
+          throw new Error(result.message || "No drivable road route found for these locations.");
+        }
+
+        Object.keys(lines).forEach((id) => { if (map.hasLayer(lines[id])) map.removeLayer(lines[id]); });
+        lines = {}; ROUTES = []; ends.clearLayers();
+        var palette = ["#2f6fdb", "#8a4fd0", "#0e8f8f"];
+
+        ROUTES = result.routes.map((route, index) => {
+          var id = String.fromCharCode(65 + index);
+          var coords = route.geometry.coordinates.map((point) => [point[1], point[0]]);
+          var routeData = {
+            id: id, name: index === 0 ? "Fastest road route" : "Alternative route " + (index + 1),
+            mins: Math.max(1, Math.round(route.duration / 60)), km: (route.distance / 1000).toFixed(1),
+            color: palette[index % palette.length], updated: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+            scores: { lighting: [0, 0], footpath: [0, 0], crossings: [0, 0], access: [0, 0] }, coords: coords
+          };
+          lines[id] = L.polyline(coords, { color: routeData.color, weight: 5, opacity: .65 });
+          lines[id].on("click", () => selectRoute(id));
+          return routeData;
+        });
+
+        L.circleMarker(from, { radius: 8, color: "#1b2430", fillColor: "#fff", fillOpacity: 1, weight: 3 })
+          .bindTooltip("Start · " + esc(fromName)).addTo(ends);
+        L.circleMarker(to, { radius: 8, color: "#1b2430", fillColor: "#f6c90e", fillOpacity: 1, weight: 3 })
+          .bindTooltip("Destination · " + esc(toName)).addTo(ends);
+
+        ROUTES.forEach((route) => lines[route.id].addTo(map)); ends.addTo(map);
+        msg.className = "";
+        msg.textContent = "Found " + ROUTES.length + " road route option(s). " +
+          "Distance and driving time are estimates from the road network. Safety evidence is shown only when available.";
+        $("routeBox").hidden = false; $("compare").hidden = true; $("cmpBtn").textContent = "Compare routes";
+        selectRoute("A");
+      } catch (error) {
+        hideRoutes(); msg.className = "msg err";
+        msg.textContent = "Route search failed: " + (error.message || "Check your internet connection and try again.");
+      } finally {
+        $("findBtn").disabled = false; $("findBtn").textContent = "Find routes";
+      }
+    });
+
+    function renderRoutes() {
+      $("routeList").innerHTML = ROUTES.map((r) => {
+        var s = score(r);
+
+        return `<button class="route" data-id="${r.id}" style="--c:${r.color}" aria-pressed="${selected === r.id}">
+          <div class="r1">
+            <strong>${esc(r.name)}</strong>
+            ${s
+              ? `<span class="score ${cls(s)}">${s.toFixed(1)} / 5</span>`
+              : '<span class="score">Limited data</span>'}
+          </div>
+          <small>${r.mins} min drive (est.) &middot; ${r.km} km &middot; ${obs(r)} observations &middot; ${openCount(r.id)} open reports</small>
+        </button>`;
+      }).join("");
+    }
+
+    $("routeList").addEventListener("click", (e) => {
+      var b = e.target.closest(".route");
+      if (b) selectRoute(b.dataset.id);
+    });
+
+    function selectRoute(id) {
+      selected = id;
+
+      ROUTES.forEach((r) => {
+        lines[r.id].setStyle({
+          weight: r.id === id ? 8 : 4,
+          opacity: r.id === id ? 1 : 0.45,
+        });
+
+        if (r.id === id) lines[r.id].bringToFront();
+      });
+
+      map.fitBounds(lines[id].getBounds(), {
+        padding: [50, 50]
+      });
+
+      renderRoutes();
+      renderDetails(id);
+      showPanel("routes");
+    }
+
+    function renderDetails(id) {
+      var r = routeById(id),
+        s = score(r),
+        v = valid(r);
+
+      var bars = INDICATORS.map((i) => {
+        var [val, n] = r.scores[i.key];
+
+        if (n < MIN) {
+          return `<div class="ind">
+            <span>${i.label}</span>
+            <span class="muted">Limited data (${n} obs)</span>
+            <b></b>
+          </div>`;
+        }
+
+        var col =
+          val >= 4 ? "#1f8a5b" :
+          val >= 3.2 ? "#d98a00" :
+          "#c0392b";
+
+        return `<div class="ind">
+          <span>${i.label}<br><small class="muted">${n} observations</small></span>
+          <div class="bar"><i style="width:${(val / 5) * 100}%;background:${col}"></i></div>
+          <b>${val.toFixed(1)}</b>
+        </div>`;
+      }).join("");
+
+      var tips = [];
+      var low = (k) =>
+        r.scores[k][1] >= MIN && r.scores[k][0] < 3.5;
+
+      if (low("lighting"))
+        tips.push("Lighting observations are weak in places. Consider another route after dark.");
+
+      if (low("footpath"))
+        tips.push("Some footpaths are reported as damaged. Watch your step.");
+
+      if (low("crossings"))
+        tips.push("Crossing infrastructure is limited. Cross with care.");
+
+      if (low("access"))
+        tips.push("Few ramps reported. This may be hard for wheelchairs, prams and walking aids.");
+
+      if (v.length < 4)
+        tips.push("Some indicators have too little data. Treat this route's picture as incomplete.");
+
+      if (!tips.length)
+        tips.push("Available evidence shows no major concerns on this route.");
+
+      var list = ISSUES.filter(
+        (i) =>
+          i.route === id &&
+          (i.status === "pending" || i.status === "verified"),
+      );
+
+      var issues = list.length
+        ? list.map(
+            (i) =>
+              `<li>${esc(i.type)} (${STATUS[i.status].label.toLowerCase()})</li>`,
+          ).join("")
+        : "<li>No open reports on this route.</li>";
+
+      $("details").innerHTML =
+        `<div class="box">
+          <h3>${s ? "Route-condition score: " + s.toFixed(1) + " / 5" : "Limited data available"}</h3>
+          <p class="muted">
+            ${s
+              ? `Average of the ${v.length} of 4 indicators that have ${MIN} or more observations.`
+              : "Not enough observations to give a score."}
+            Based on ${obs(r)} linked observations. Route calculated ${r.updated}.
+          </p>
+        </div>
+
+        <div class="box">
+          <h3>${esc(r.name)}: indicator breakdown</h3>
+          ${bars}
+        </div>
+
+        <div class="box">
+          <h3>Before you travel</h3>
+          <ul>${tips.map((t) => "<li>" + t + "</li>").join("")}</ul>
+        </div>
+
+        <div class="box">
+          <h3>Relevant community reports</h3>
+          <ul>${issues}</ul>
+        </div>
+
+        <div class="disc">
+          Route distance and time are calculated from the road network. Safety indicators require verified citizen observations and are currently limited for these route options.
+        </div>`;
+    }
+
+    $("cmpBtn").addEventListener("click", () => {
+      var box = $("compare");
+
+      box.hidden = !box.hidden;
+      $("cmpBtn").textContent = box.hidden
+        ? "Compare routes"
+        : "Hide comparison";
+
+      if (box.hidden) return;
+
+      var head =
+        "<tr><th></th>" +
+        ROUTES.map((r) => `<th>${r.id}</th>`).join("") +
+        "</tr>";
+
+      var rows = INDICATORS.map((i) => {
+        var best = Math.max(
+          ...ROUTES.filter((r) => r.scores[i.key][1] >= MIN).map(
+            (r) => r.scores[i.key][0],
+          ),
+        );
+
+        return (
+          `<tr><td>${i.label}</td>` +
+          ROUTES.map((r) => {
+            var [v, n] = r.scores[i.key];
+
+            return n < MIN
+              ? '<td class="muted">Limited</td>'
+              : `<td class="${v === best ? "best" : ""}">${v.toFixed(1)}</td>`;
+          }).join("") +
+          "</tr>"
+        );
+      }).join("");
+
+      var scored = ROUTES.map(score),
+        bestAll = Math.max(...scored.filter((x) => x !== null));
+
+      rows +=
+        "<tr><td><b>Overall</b></td>" +
+        scored.map((x) =>
+          x === null
+            ? '<td class="muted">Limited</td>'
+            : `<td class="${x === bestAll ? "best" : ""}">${x.toFixed(1)}</td>`,
+        ).join("") +
+        "</tr>";
+
+      rows +=
+        "<tr><td>Observations</td>" +
+        ROUTES.map((r) => `<td>${obs(r)}</td>`).join("") +
+        "</tr>";
+
+      rows +=
+        "<tr><td>Data coverage</td>" +
+        ROUTES.map((r) => `<td>${valid(r).length} of 4</td>`).join("") +
+        "</tr>";
+
+      rows +=
+        "<tr><td>Last updated</td>" +
+        ROUTES.map((r) => `<td>${r.updated.slice(0, -5)}</td>`).join("") +
+        "</tr>";
+
+      rows +=
+        "<tr><td>Open reports</td>" +
+        ROUTES.map((r) => `<td>${openCount(r.id)}</td>`).join("") +
+        "</tr>";
+
+      box.innerHTML = `<table class="tbl">${head}${rows}</table>
+        <p class="hint" style="margin-top:10px">
+          Each column represents a calculated road-route option. "Limited" means no verified citizen observations are currently linked to that route. Travel time is an estimate; this comparison is not a safety guarantee.
+        </p>`;
+    });
+
+    /* ===== REPORT ===== */
+    map.on("click", (e) => {
+      if ($("p-report").hidden) return;
+
+      window.safeStreetPicked = picked = e.latlng;
+
+      if (pickMarker) map.removeLayer(pickMarker);
+      pickMarker = L.marker(picked).addTo(map);
+
+      $("loc").textContent =
+        "Location set: " +
+        picked.lat.toFixed(4) +
+        ", " +
+        picked.lng.toFixed(4);
+
+      $("loc").className = "loc set";
+    });
+
+    /* ===== REPORT: CONNECTED TO BACKEND ===== */
+    function getCitizenToken() {
+      return localStorage.getItem("token") ||
+        sessionStorage.getItem("token") ||
+        localStorage.getItem("authToken") ||
+        sessionStorage.getItem("authToken") ||
+        localStorage.getItem("safeStreetToken") ||
+        sessionStorage.getItem("safeStreetToken") ||
+        localStorage.getItem("safestreet_token") ||
+        sessionStorage.getItem("safestreet_token");
+    }
+
+    function apiReportToIssue(report) {
+      var category = report.ai_category || report.aiCategory || report.category || "Other";
+      var lat = Number(report.latitude ?? report.lat);
+      var lng = Number(report.longitude ?? report.lng);
+      var status = String(report.status || "pending").toLowerCase();
+      if (!STATUS[status]) status = "pending";
+      var created = report.created_at || report.createdAt;
+      return {
+        id: String(report.id),
+        ticketNo: report.ticketNo || report.ticket_no || null,
+        type: category,
+        route: null,
+        lat: lat,
+        lng: lng,
+        text: report.description || report.text || "",
+        status: status,
+        votes: Number(report.votes || 1),
+        when: created ? new Date(created).toLocaleString("en-IN", {
+          day: "numeric", month: "short", hour: "numeric", minute: "2-digit"
+        }) : "Just now",
+        mine: true,
+        sample: false,
+        photo: report.image_url || report.image || null
+      };
+    }
+
+    $("reportForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      var msg = $("rmsg");
+      var text = $("desc").value.trim();
+      var file = $("img").files[0];
+      var token = getCitizenToken();
+
+      msg.className = "msg err";
+
+      if (!token) {
+        msg.textContent = "Your login session is missing. Please log in again using the connected login page.";
+        return;
+      }
+
+      if (!picked) {
+        msg.textContent = "Click the map to set the location first.";
+        return;
+      }
+
+      if (text.length < 10) {
+        msg.textContent = "Add a short description (at least 10 characters).";
+        return;
+      }
+
+      if (file && (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024)) {
+        msg.textContent = "Choose an image file under 5 MB.";
+        return;
+      }
+
+      var submitButton = $("reportForm").querySelector('button[type="submit"]');
+      var originalText = submitButton.textContent;
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+      msg.className = "msg";
+      msg.textContent = "Sending report to SafeStreet AI...";
+
+      try {
+        var formData = new FormData();
+        formData.append("category", $("type").value);
+        formData.append("description", text);
+        formData.append("lat", String(picked.lat));
+        formData.append("lng", String(picked.lng));
+        if (file) formData.append("image", file);
+
+        var response = await fetch("http://localhost:5000/api/reports", {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + token },
+          body: formData
+        });
+
+        var result = await response.json().catch(function(){ return {}; });
+        if (!response.ok || result.success === false) {
+          throw new Error(result.message || result.error || "Report submission failed (" + response.status + ").");
+        }
+
+        var savedReport = result.data || result.report || result;
+        var issue = apiReportToIssue(savedReport);
+        await loadCommunityReports();
+        map.setView([issue.lat, issue.lng], 16);
+
+        if (pickMarker) {
+          map.removeLayer(pickMarker);
+          pickMarker = null;
+        }
+        window.safeStreetPicked = picked = null;
+
+        $("loc").textContent = "Click a spot on the map to set the location.";
+        $("loc").className = "loc";
+        $("desc").value = "";
+        $("img").value = "";
+
+        msg.className = "msg ok";
+        msg.textContent = "Report saved to database as ticket #" + (issue.ticketNo || savedReport.ticket_no || savedReport.id) + ". Status: Pending review.";
+        renderIssues();
+      } catch (error) {
+        msg.className = "msg err";
+        msg.textContent = error.message || "Could not submit report. Check your login and backend connection.";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+      }
+    });
+
+    async function loadCommunityReports() {
+      var token = getCitizenToken();
+      var ownIds = new Set();
+      var ownRows = [];
+
+      if (token) {
+        try {
+          var mineResponse = await fetch("http://localhost:5000/api/my/reports", {
+            headers: { "Authorization": "Bearer " + token }
+          });
+          if (mineResponse.ok) {
+            var minePayload = await mineResponse.json();
+            ownRows = Array.isArray(minePayload.data) ? minePayload.data : [];
+            ownRows.forEach(function(row) { ownIds.add(String(row.id)); });
+          }
+        } catch (error) {
+          console.warn("Could not load your reports:", error);
+        }
+      }
+
+      try {
+        var response = await fetch("http://localhost:5000/api/reports?limit=250");
+        var payload = await response.json().catch(function() { return {}; });
+        if (!response.ok) throw new Error(payload.message || "Reports API failed (" + response.status + ")");
+        var rows = Array.isArray(payload.data) ? payload.data : [];
+
+        // Merge own rows too, in case a public endpoint has a temporary delay.
+        ownRows.forEach(function(row) {
+          if (!rows.some(function(item) { return String(item.id) === String(row.id); })) rows.unshift(row);
+        });
+
+        ISSUES = rows.map(function(report) {
+          var issue = apiReportToIssue(report);
+          issue.mine = ownIds.has(String(report.id));
+          issue.sample = false;
+          return issue;
+        });
+
+        Object.keys(markers).forEach(function(key) {
+          map.removeLayer(markers[key]);
+          delete markers[key];
+        });
+        ISSUES.forEach(drawMarker);
+        renderIssues();
+      } catch (error) {
+        console.error("Could not load live community reports:", error);
+        $("issueList").innerHTML = '<p class="hint">Could not load live reports. Check that the backend is running on port 5000, then refresh.</p>';
+      }
+    }
+
+    /* ===== COMMUNITY ===== */
+    var filter = "all";
+
+    document.querySelectorAll(".chip").forEach((c) =>
+      c.addEventListener("click", () => {
+        filter = c.dataset.f;
+
+        document.querySelectorAll(".chip").forEach((x) =>
+          x.setAttribute("aria-pressed", x === c ? "true" : "false"),
+        );
+
+        renderIssues();
+      }),
+    );
+
+    function renderIssues() {
+      var list = ISSUES.filter((i) => filter === "all" || i.mine);
+
+      if (!list.length) {
+        $("issueList").innerHTML =
+          '<p class="hint">You have not reported anything yet.</p>';
+        return;
+      }
+
+      $("issueList").innerHTML = list.map((i) => {
+        var s = STATUS[i.status],
+          track = "";
+
+        for (var n = 1; n <= 3; n++)
+          track += `<i class="${n <= s.step ? "on" : ""}"></i>`;
+
+        return `<div class="issue">
+          <div class="t">
+            <b>${i.ticketNo ? "#" + esc(i.ticketNo) + " · " : ""}${esc(i.type)}</b>
+            <span class="badge st-${i.status}">${s.label}</span>
+          </div>
+
+          <p>${esc(i.text)}</p>
+          ${i.photo ? `<p class="muted">Photo attached: ${esc(i.photo)}</p>` : ""}
+
+          <div class="track" aria-hidden="true">${track}</div>
+
+          <div class="meta">
+            <span>${esc(i.when)}${i.mine ? " &middot; Your report" : ""}${i.sample ? " &middot; Sample" : ""}</span>
+            <span>
+              <button class="mini" data-id="${i.id}" data-a="vote">I see this too (${i.votes})</button>
+              <button class="mini" data-id="${i.id}" data-a="show">Show on map</button>
+            </span>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    $("issueList").addEventListener("click", (e) => {
+      var b = e.target.closest(".mini");
+      if (!b) return;
+
+      var it = ISSUES.filter((x) => String(x.id) === b.dataset.id)[0];
+
+      if (b.dataset.a === "vote") {
+        it.votes++;
+        renderIssues();
+      } else {
+        map.setView([it.lat, it.lng], 16);
+        markers[it.id].addTo(map).openPopup();
+      }
+    });
+
+    /* ===== TABS ===== */
+    function showPanel(name) {
+      ["routes", "report", "community"].forEach((p) => {
+        $("p-" + p).hidden = p !== name;
+
+        $("t-" + p).setAttribute(
+          "aria-selected",
+          p === name ? "true" : "false",
+        );
+      });
+    }
+
+    document.querySelectorAll(".tabs button").forEach((b) =>
+      b.addEventListener("click", () => showPanel(b.dataset.p)),
+    );
+
+    /* ===== START ===== */
+    renderIssues();
+    loadCommunityReports();
+    $("findBtn").click();
+
+    if (location.hash === "#report") showPanel("report");
+  </script>
+
+</body>
+</html>

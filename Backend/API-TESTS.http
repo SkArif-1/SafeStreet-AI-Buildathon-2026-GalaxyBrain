@@ -1,0 +1,26 @@
+### Health
+GET http://localhost:5000/api/health
+
+### Register citizen
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{"name":"Test Citizen","email":"citizen@example.com","password":"SafeStreet123","area":"Central"}
+
+### Login (paste token into subsequent Authorization headers)
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{"email":"citizen@example.com","password":"SafeStreet123","role":"citizen"}
+
+### Public reports
+GET http://localhost:5000/api/reports
+
+### Routes
+GET http://localhost:5000/api/routes
+
+### Admin login (credentials from .env)
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{"email":"admin@safestreet.local","password":"ChangeMe123!","role":"admin"}
